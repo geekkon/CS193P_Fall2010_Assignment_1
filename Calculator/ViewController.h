@@ -7,8 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Brain.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController {
+    IBOutlet UILabel *display;
+    Brain *brain;
+    BOOL userIsInTheMiddleOfTypingANumber;
+    NSString *previousOperation;
+    IBOutlet UILabel *memory;
+    IBOutlet UILabel *warning;
+    IBOutlet UILabel *operationState;
+}
+
+- (IBAction)digitPressed:(UIButton *)sender;
+- (IBAction)operationPressed:(UIButton *)sender;
+- (IBAction)measurementChanged:(UISwitch *)sender;
 
 
 @end
