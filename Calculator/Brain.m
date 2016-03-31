@@ -10,6 +10,18 @@
 
 @implementation Brain
 
+@synthesize operand = operand;
+@synthesize waitingOperation = waitingOperation;
+@synthesize waitingOperand = waitingOperand;
+@synthesize memory = memory;
+@synthesize measurement = measurement;
+@synthesize expression = expression;
+
++ (double)evaluateExpression:(id)anExpression usingVariableValues:(NSDictionary *)variables {
+    
+    return 255.17;
+}
+
 - (void)setOperand:(double)anOperand {
     
     operand = anOperand;
@@ -17,15 +29,15 @@
 
 - (void)performWaitingOperation {
     
-    if ([waitingOperation isEqualToString:@"+"]) {
-        operand = waitingOperand + operand;
-    } else if ([waitingOperation isEqualToString:@"*"]) {
-        operand = waitingOperand * operand;
-    } else if ([waitingOperation isEqualToString:@"-"]) {
-        operand = waitingOperand - operand;
-    } else if ([waitingOperation isEqualToString:@"/"]) {
-        if (operand) {
-            operand = waitingOperand / operand;
+    if ([self.waitingOperation isEqualToString:@"+"]) {
+        self.operand = self.waitingOperand + self.operand;
+    } else if ([self.waitingOperation isEqualToString:@"*"]) {
+        self.operand = self.waitingOperand * self.operand;
+    } else if ([self.waitingOperation isEqualToString:@"-"]) {
+        self.operand = self.waitingOperand - self.operand;
+    } else if ([self.waitingOperation isEqualToString:@"/"]) {
+        if (self.operand) {
+            self.operand = self.waitingOperand / self.operand;
         }
     } 
 }
@@ -33,63 +45,73 @@
 - (double)performOperation:(NSString *)operation {
     
     if ([operation isEqualToString:@"sqrt"]) {
-        if (operand >= 0) {
-            operand = sqrt(operand);
+        if (self.operand >= 0) {
+            self.operand = sqrt(self.operand);
         }
     } else if ([operation isEqualToString:@"+/-"]) {
-        operand = - operand;
+        self.operand = -self.operand;
     } else if ([operation isEqualToString:@"1/x"]) {
-        if (operand) {
-            operand = 1 / operand;
+        if (self.operand) {
+            self.operand = 1 / self.operand;
         }
     } else if ([operation isEqualToString:@"degrees"] || [operation isEqualToString:@"radians"]) {
-        measurement = operation;
+        self.measurement = operation;
     }  else if ([operation isEqualToString:@"sin"]) {
-        if ([measurement isEqualToString:@"degrees"]) {
-            operand = sin(operand * (3.14/180));
+        if ([self.measurement isEqualToString:@"degrees"]) {
+            self.operand = sin(self.operand * (3.14/180.0));
         } else {
-            operand = sin(operand);
+            self.operand = sin(self.operand);
         }
     } else if ([operation isEqualToString:@"cos"]) {
-        if ([measurement isEqualToString:@"degrees"]) {
-            operand = cos(operand * (3.14/180));
+        if ([self.measurement isEqualToString:@"degrees"]) {
+            self.operand = cos(self.operand * (3.14/180.0));
         } else {
-            operand = cos(operand);
+            self.operand = cos(self.operand);
         }
     } else if ([operation isEqualToString:@"store"]) {
-        memory = operand;
+        self.memory = self.operand;
     } else if ([operation isEqualToString:@"recall"]) {
-        operand = memory;
+        self.operand = self.memory;
     } else if ([operation isEqualToString:@"mem+"]) {
-        memory = memory + operand;
+        self.memory = self.memory + self.operand;
     } else if ([operation isEqualToString:@"clear"]) {
-        memory = 0;
-        operand = 0;
-        waitingOperand = 0;
-        waitingOperation = nil;
+        self.memory = 0;
+        self.operand = 0;
+        self.waitingOperand = 0;
+        self.waitingOperation = nil;
     } else if ([operation isEqualToString:@"clear mem"]) {
-        memory = 0;
+        self.memory = 0;
     } else {
         [self performWaitingOperation];
-        waitingOperation = operation;
-        waitingOperand = operand;
+        self.waitingOperation = operation;
+        self.waitingOperand = self.operand;
     }
     
-    return operand;
+    return self.operand;
 }
 
 - (double)memoryValue {
     
-    return memory;
+    return self.memory;
 }
 
 - (NSString *)operationState {
     
-    if (waitingOperand && waitingOperation) {
-        return [NSString stringWithFormat:@"%g %@", waitingOperand, waitingOperation];
+    if (self.waitingOperand && self.waitingOperation) {
+        return [NSString stringWithFormat:@"%g %@", self.waitingOperand, self.waitingOperation];
     }
     
     return @"";
+}
+
+- (void)dealloc {
+    
+    self.waitingOperation = nil;
+    self.measurement = nil;
+    [expression release];
+    expression = nil;
+    
+    [super dealloc];
 }
 
 @end

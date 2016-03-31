@@ -10,9 +10,21 @@
 
 @interface ViewController ()
 
+@property (strong, nonatomic) Brain *brain;
+@property (nonatomic) BOOL userIsInTheMiddleOfTypingANumber;
+@property (strong, nonatomic) NSString *previousOperation;
+
 @end
 
 @implementation ViewController
+
+@synthesize brain = brain;
+@synthesize userIsInTheMiddleOfTypingANumber = userIsInTheMiddleOfTypingANumber;
+@synthesize previousOperation = previousOperation;
+@synthesize display = display;
+@synthesize memory = memory;
+@synthesize warning = warning;
+@synthesize operationState = operationState;
 
 - (Brain *)brain {
     
@@ -25,82 +37,115 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     
-    NSString *digit = [[sender titleLabel] text];
+    NSString *digit = sender.titleLabel.text;
     
     if ([digit isEqualToString:@"PI"]) {
         digit = @"3.14";
     } 
     
-    if (userIsInTheMiddleOfTypingANumber) {
+    if (self.userIsInTheMiddleOfTypingANumber) {
         if ([digit isEqualToString:@"."]) {
-            NSRange range = [[display text] rangeOfString:@"."];
+            NSRange range = [self.display.text rangeOfString:@"."];
             if (range.location == NSNotFound) {
-                [display setText:[[display text] stringByAppendingString:digit]];
+                self.display.text = [self.display.text stringByAppendingString:digit];
             }
-//            if (![[display text] containsString:@"."]) {
-//                [display setText:[[display text] stringByAppendingString:digit]];
-//            }
         } else {
-            [display setText:[[display text] stringByAppendingString:digit]];
+            self.display.text = [self.display.text stringByAppendingString:digit];
         }
     } else {
-        [display setText:digit];
-        userIsInTheMiddleOfTypingANumber = YES;
+        self.display.text = digit;
+        self.userIsInTheMiddleOfTypingANumber = YES;
     }
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
     
-    [warning setText:nil];
+    self.warning.text = nil;
 
-    if ([previousOperation isEqualToString:@"/"] && [[display text] doubleValue] == 0.0) {
-        [warning setText:@"Divizion by zero"];
+    if (([self.previousOperation isEqualToString:@"/"]) && (self.display.text.doubleValue == 0.0)) {
+        self.warning.text = @"Divizion by zero";
     }
     
-    NSString *operation = [[sender titleLabel] text];
+    NSString *operation = sender.titleLabel.text;
     
-    if ([operation isEqualToString:@"1/x"] && [[display text] doubleValue] == 0.0) {
-        [warning setText:@"Divizion by zero"];
+    if (([operation isEqualToString:@"1/x"]) && (self.display.text.doubleValue == 0.0)) {
+        self.warning.text = @"Divizion by zero";
     }
     
-    if ([operation isEqualToString:@"sqrt"] && [[display text] doubleValue] < 0) {
-        [warning setText:@"SQRT from negative number"];
+    if (([operation isEqualToString:@"sqrt"]) && (self.display.text.doubleValue < 0.0)) {
+        self.warning.text = @"SQRT from negative number";
     }
     
     if ([operation isEqualToString:@"clear mem"]) {
-        [[self brain] performOperation:operation];
+        
+        [self.brain performOperation:operation];
      
-    } else if ([operation isEqualToString:@"<-"] && [[display text] length]) {
-        [display setText:[[display text] substringToIndex:[[display text] length] - 1]];
+    } else if (([operation isEqualToString:@"<-"]) && (self.display.text.length)) {
+        self.display.text = [self.display.text substringToIndex:(self.display.text.length - 1)];
         
     } else {
         
-        if (userIsInTheMiddleOfTypingANumber) {
-            [[self brain] setOperand:[[display text] doubleValue]];
-            userIsInTheMiddleOfTypingANumber = NO;
+        if (self.userIsInTheMiddleOfTypingANumber) {
+            [self.brain setOperand:self.display.text.doubleValue];
+            self.userIsInTheMiddleOfTypingANumber = NO;
         }
         
-        double result = [[self brain] performOperation:operation];
+        double result = [self.brain performOperation:operation];
         
-        [display setText:[NSString stringWithFormat:@"%g", result]];
+        self.display.text = [NSString stringWithFormat:@"%g", result];
         
-        previousOperation = operation;
+        self.previousOperation = operation;
     }
     
-    if ([operation isEqualToString:@"clear"] || [operation isEqualToString:@"store"] || [operation isEqualToString:@"mem+"] || [operation isEqualToString:@"clear mem"]) {
-        [memory setText:[NSString stringWithFormat:@"%g", [[self brain] memoryValue]]];
+    if (([operation isEqualToString:@"clear"]) || ([operation isEqualToString:@"store"]) || ([operation isEqualToString:@"mem+"]) || ([operation isEqualToString:@"clear mem"])) {
+        self.memory.text = [NSString stringWithFormat:@"%g", [self.brain memoryValue]];
     }
     
-    [operationState setText:[[self brain] operationState]];
+    self.operationState.text = [self.brain operationState];
 }
 
 - (IBAction)measurementChanged:(UISwitch *)sender {
    
     if (sender.isOn) {
-        [[self brain] performOperation:@"degrees"];
+        [self.brain performOperation:@"degrees"];
     } else {
-        [[self brain] performOperation:@"radians"];
+        [self.brain performOperation:@"radians"];
     }
+}
+
+- (IBAction)setVariableAsOperand:(UIButton *)sender {
+    
+    
+}
+
+- (IBAction)solve:(UIButton *)sender {
+    
+    double result = [Brain evaluateExpression:self.brain.expression usingVariableValues:nil];
+    
+    self.display.text = [NSString stringWithFormat:@"%g", result];
+}
+
+- (void)releaseOutlets {
+    
+    self.display = nil;
+    self.warning = nil;
+    self.memory = nil;
+    self.operationState = nil;
+    self.brain = nil;
+    self.previousOperation = nil;
+}
+
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    
+    [self releaseOutlets];
+}
+
+- (void)dealloc {
+    
+    [self releaseOutlets];
+    
+    [super dealloc];
 }
 
 @end

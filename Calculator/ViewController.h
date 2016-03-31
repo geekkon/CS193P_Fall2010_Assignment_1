@@ -19,10 +19,18 @@
     IBOutlet UILabel *operationState;
 }
 
+@property (strong, nonatomic) IBOutlet UILabel *display;
+@property (strong, nonatomic) IBOutlet UILabel *memory;
+@property (strong, nonatomic) IBOutlet UILabel *warning;
+@property (strong, nonatomic) IBOutlet UILabel *operationState;
+
+
 - (IBAction)digitPressed:(UIButton *)sender;
 - (IBAction)operationPressed:(UIButton *)sender;
 - (IBAction)measurementChanged:(UISwitch *)sender;
 
+- (IBAction)setVariableAsOperand:(UIButton *)sender;
+- (IBAction)solve:(UIButton *)sender;
 
 @end
 
