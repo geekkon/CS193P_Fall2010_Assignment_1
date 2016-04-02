@@ -8,6 +8,16 @@
 
 #import "Brain.h"
 
+#define VARIABLE_PREFIX @"%"
+
+@interface Brain () {
+    NSMutableArray *internalExpression;
+}
+
+@property (strong, nonatomic) NSMutableArray *intinternalExpression;
+
+@end
+
 @implementation Brain
 
 @synthesize operand = operand;
@@ -15,16 +25,43 @@
 @synthesize waitingOperand = waitingOperand;
 @synthesize memory = memory;
 @synthesize measurement = measurement;
-@synthesize expression = expression;
 
 + (double)evaluateExpression:(id)anExpression usingVariableValues:(NSDictionary *)variables {
     
+    /*
+     So then evaluateExpression:usingVariableValues: is simply a matter of enumerating anExpression using for-in and setting each NSNumber to be the operand and for each NSString either passing it to performOperation: or, if it has the special prepended string, substituting the value of the variable from the passed-in NSDictionary and setting that to be the operand. Then return the current operand when the enumeration is done.
+     But there is a catch: evaluateExpression:usingVariableValues: is a class method, not an instance method. So to do all this setting of the operand property and calling performOperation:, you’ll need a “worker bee” instance of your CalculatorBrain behind the scenes inside evaluateExpression:usingVariableValues:’s implementation. That’s perfectly fine. You can alloc/init one each time it’s called (in this case, don’t forget to release it each time too, but also to grab its operand before you release it so you can return that operand). Or you can create one once and keep it around in a C static variable (but in that case, don’t forget to performOperation:@“C” before each use so that memory and waitingOperation and such is all cleared out).
+     */
+    
+    
     return 255.17;
+}
+
+- (NSMutableArray *)intinternalExpression {
+    
+    if (!internalExpression) {
+        internalExpression = [NSMutableArray array];
+    }
+    
+    return internalExpression;
+}
+
+- (id)expression {
+    
+    return [[self.intinternalExpression copy] autorelease];
 }
 
 - (void)setOperand:(double)anOperand {
     
     operand = anOperand;
+    [self.intinternalExpression addObject:@(anOperand)];
+}
+
+- (void)setVariableAsOperand:(NSString *)variableName {
+    
+    NSString *variable = [VARIABLE_PREFIX stringByAppendingString:variableName];
+    
+    [self.intinternalExpression addObject:variable];
 }
 
 - (void)performWaitingOperation {
@@ -43,6 +80,8 @@
 }
 
 - (double)performOperation:(NSString *)operation {
+    
+    [self.intinternalExpression addObject:operation];
     
     if ([operation isEqualToString:@"sqrt"]) {
         if (self.operand >= 0) {
@@ -108,8 +147,7 @@
     
     self.waitingOperation = nil;
     self.measurement = nil;
-    [expression release];
-    expression = nil;
+    self.intinternalExpression = nil;
     
     [super dealloc];
 }

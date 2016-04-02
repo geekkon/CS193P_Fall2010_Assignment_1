@@ -14,7 +14,6 @@
     double waitingOperand;
     double memory;
     NSString *measurement;
-    id expression;
 }
 
 @property (nonatomic) double operand;
