@@ -14,7 +14,7 @@
     NSMutableArray *internalExpression;
 }
 
-@property (strong, nonatomic) NSMutableArray *intinternalExpression;
+@property (strong, nonatomic) NSMutableArray *internalExpression;
 
 @end
 
@@ -25,22 +25,76 @@
 @synthesize waitingOperand = waitingOperand;
 @synthesize memory = memory;
 @synthesize measurement = measurement;
+@synthesize internalExpression = internalExpression;
 
 + (double)evaluateExpression:(id)anExpression usingVariableValues:(NSDictionary *)variables {
+
+    if (![anExpression isMemberOfClass:[NSArray class]]) {
+        NSLog(@"anExpression is not a NSArray kind");
+        return 0.0;
+    }
     
-    /*
-     So then evaluateExpression:usingVariableValues: is simply a matter of enumerating anExpression using for-in and setting each NSNumber to be the operand and for each NSString either passing it to performOperation: or, if it has the special prepended string, substituting the value of the variable from the passed-in NSDictionary and setting that to be the operand. Then return the current operand when the enumeration is done.
-     But there is a catch: evaluateExpression:usingVariableValues: is a class method, not an instance method. So to do all this setting of the operand property and calling performOperation:, you’ll need a “worker bee” instance of your CalculatorBrain behind the scenes inside evaluateExpression:usingVariableValues:’s implementation. That’s perfectly fine. You can alloc/init one each time it’s called (in this case, don’t forget to release it each time too, but also to grab its operand before you release it so you can return that operand). Or you can create one once and keep it around in a C static variable (but in that case, don’t forget to performOperation:@“C” before each use so that memory and waitingOperation and such is all cleared out).
-     */
+    Brain *worker = [[Brain alloc] init];
+
+    double result = 0.0;
     
+    for (id object in (NSArray *)anExpression) {
+        
+        if ([object isKindOfClass:[NSNumber class]]) {
+            
+            [worker setOperand:[(NSNumber *)object doubleValue]];
+            
+        } else if ([object isKindOfClass:[NSString class]]) {
+            
+            NSString *operationOrVariable = (NSString *)object;
+            
+            if ((operationOrVariable.length == 2) &&
+                [[operationOrVariable substringToIndex:1] isEqualToString:VARIABLE_PREFIX]) {
+                
+                NSString *variable = [operationOrVariable substringFromIndex:1];
+                
+                NSNumber *value = variables[variable];
+                
+                if (value) {
+                    
+                    [worker setOperand:[value doubleValue]];
+                }
+                
+            } else {
+                
+                result = [worker performOperation:operationOrVariable];
+            }
+        }
+    }
     
-    return 255.17;
+    [worker release];
+    
+    return result;
 }
 
-- (NSMutableArray *)intinternalExpression {
++ (NSSet *)variablesInExpression:(id)anExpression {
+    
+    /*
+     To implement this one, you just enumerate through anExpression (remember, it’s an NSArray, even though the caller doesn’t know that, CalculatorBrain’s internal implementation does) using for-in and just call addObject: on an NSMutableSet you create. It’s fine to return the mutable set through a return type which is immutable because NSMutableSet inherits from NSSet. Be sure to get the memory management right!
+     */
+    
+    return nil;
+}
+
++ (NSString *)descriptionOfExpression:(id)anExpression {
+    
+    /*
+     To implement this you will have to enumerate (using for-in) through anExpression and build a string (either a mutable one or a series of immutable ones) and return it. Just like in the rest of this assignment, the memory management must be right.
+     */
+    
+    return nil;
+}
+
+- (NSMutableArray *)internalExpression {
     
     if (!internalExpression) {
-        internalExpression = [NSMutableArray array];
+#warning method array not working in MRC
+        internalExpression = [[NSMutableArray alloc] init];
     }
     
     return internalExpression;
@@ -48,20 +102,20 @@
 
 - (id)expression {
     
-    return [[self.intinternalExpression copy] autorelease];
+    return [[self.internalExpression copy] autorelease];
 }
 
 - (void)setOperand:(double)anOperand {
     
     operand = anOperand;
-    [self.intinternalExpression addObject:@(anOperand)];
+    [self.internalExpression addObject:@(anOperand)];
 }
 
 - (void)setVariableAsOperand:(NSString *)variableName {
     
     NSString *variable = [VARIABLE_PREFIX stringByAppendingString:variableName];
     
-    [self.intinternalExpression addObject:variable];
+    [self.internalExpression addObject:variable];
 }
 
 - (void)performWaitingOperation {
@@ -81,7 +135,7 @@
 
 - (double)performOperation:(NSString *)operation {
     
-    [self.intinternalExpression addObject:operation];
+    [self.internalExpression addObject:operation];
     
     if ([operation isEqualToString:@"sqrt"]) {
         if (self.operand >= 0) {
@@ -118,6 +172,7 @@
         self.operand = 0;
         self.waitingOperand = 0;
         self.waitingOperation = nil;
+        self.internalExpression = nil;
     } else if ([operation isEqualToString:@"clear mem"]) {
         self.memory = 0;
     } else {
@@ -147,7 +202,7 @@
     
     self.waitingOperation = nil;
     self.measurement = nil;
-    self.intinternalExpression = nil;
+    self.internalExpression = nil;
     
     [super dealloc];
 }

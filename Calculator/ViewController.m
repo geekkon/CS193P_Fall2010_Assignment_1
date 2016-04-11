@@ -35,6 +35,14 @@
     return brain;
 }
 
+- (NSDictionary *)createVariableValuesDictionary {
+    
+    return @{@"x" : @2,
+             @"a" : @14,
+             @"b" : @3.78,
+             @"c" : @-5.12};
+}
+
 - (IBAction)digitPressed:(UIButton *)sender {
     
     NSString *digit = sender.titleLabel.text;
@@ -113,14 +121,18 @@
     }
 }
 
-- (IBAction)setVariableAsOperand:(UIButton *)sender {
+- (IBAction)variablePressed:(UIButton *)sender {
     
+    [self.brain setVariableAsOperand:sender.titleLabel.text];
     
+    self.display.text = [Brain descriptionOfExpression:self.brain.expression];
 }
 
-- (IBAction)solve:(UIButton *)sender {
+- (IBAction)solvePressed:(UIButton *)sender {
     
-    double result = [Brain evaluateExpression:self.brain.expression usingVariableValues:nil];
+    NSDictionary *variableValues = [self createVariableValuesDictionary];
+
+    double result = [Brain evaluateExpression:self.brain.expression usingVariableValues:variableValues];
     
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
@@ -144,7 +156,6 @@
 - (void)dealloc {
     
     [self releaseOutlets];
-    
     [super dealloc];
 }
 

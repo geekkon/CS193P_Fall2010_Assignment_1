@@ -29,8 +29,8 @@
 - (IBAction)operationPressed:(UIButton *)sender;
 - (IBAction)measurementChanged:(UISwitch *)sender;
 
-- (IBAction)setVariableAsOperand:(UIButton *)sender;
-- (IBAction)solve:(UIButton *)sender;
+- (IBAction)variablePressed:(UIButton *)sender;
+- (IBAction)solvePressed:(UIButton *)sender;
 
 @end
 

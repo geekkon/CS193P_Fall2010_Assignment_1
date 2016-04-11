@@ -120,7 +120,7 @@
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="x"/>
                                 <connections>
-                                    <action selector="setVariableAsOperand:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1mU-EY-aeF"/>
+                                    <action selector="variablePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="TGX-al-ooc"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="A3L-gc-B98">
@@ -131,7 +131,7 @@
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="a"/>
                                 <connections>
-                                    <action selector="setVariableAsOperand:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1fc-eh-cu3"/>
+                                    <action selector="variablePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="JFS-AT-qjI"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Oyb-Hh-W1o">
@@ -142,7 +142,7 @@
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="b"/>
                                 <connections>
-                                    <action selector="setVariableAsOperand:" destination="BYZ-38-t0r" eventType="touchUpInside" id="JSN-bZ-hMI"/>
+                                    <action selector="variablePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Nkj-Jm-JC9"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="pS4-t2-yAJ">
@@ -153,7 +153,7 @@
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="c"/>
                                 <connections>
-                                    <action selector="setVariableAsOperand:" destination="BYZ-38-t0r" eventType="touchUpInside" id="75U-ix-uhq"/>
+                                    <action selector="variablePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Zoq-S0-Ef2"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="VoJ-LA-5OB">
@@ -428,7 +428,7 @@
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="solve"/>
                                 <connections>
-                                    <action selector="solve:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KXD-Qx-C8D"/>
+                                    <action selector="solvePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="CGE-9m-hkn"/>
                                 </connections>
                             </button>
                         </subviews>
